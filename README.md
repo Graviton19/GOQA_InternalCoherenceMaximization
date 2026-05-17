@@ -14,9 +14,11 @@ ICM searches for a label assignment over survey questions that maximizes mutual 
 - [Setup](#setup)
 - [Usage](#usage)
 - [Configuration](#configuration)
+- [Results](#results)
 - [Output](#output)
 - [Evaluation Conditions](#evaluation-conditions)
 - [Data Format](#data-format)
+- [Citation](#citation)
 
 ---
 
@@ -28,6 +30,8 @@ Each country in GOQA is treated as a distinct **persona**. For each persona:
 2. ICM (simulated annealing over label assignments) finds a coherent set of labels.
 3. Those ICM labels are used as few-shot demonstrations during LLM evaluation.
 4. Results are compared across four conditions: zero-shot, zero-shot chat, gold-label ICL, and ICM-label ICL.
+
+Experiments were run on **4 countries**: United States, Britain, Germany, and Japan — using up to **256 binary training questions** and **100 binary test questions** per persona.
 
 ---
 
@@ -252,6 +256,22 @@ COUNTRIES = [
 
 ---
 
+## Results
+
+### Figure 1 — Aggregate accuracy across all 4 conditions
+
+![Figure 1: Aggregate Results](outputs/figure1_aggregate.png)
+
+Prompt-ICM achieves **70.2%** accuracy — well above zero-shot (51.5%) and zero-shot chat (64.0%), and within 4 points of Prompt-Golden (74.2%) which uses ground-truth labels.
+
+### Figure 2 — Accuracy vs. number of in-context examples
+
+![Figure 2: Accuracy vs. Shots](outputs/figure2_aggregate.png)
+
+ICM labels track gold labels closely across all shot counts (4 → 48), both far above random-label baselines — demonstrating that ICM recovers useful label signal without any access to gold annotations.
+
+---
+
 ## Output
 
 After a full run, `./outputs/` contains:
@@ -316,6 +336,26 @@ Each binary GOQA question produces two examples per country:
 - ICM **must** use a base (non-instruct) model for clean log-probability signal. Using an instruct model for ICM degrades results.
 - Running the full pipeline with all countries and `--iters 600` makes many API calls. Use `--iters 100` and `--skip_figure2` during development.
 - The `--chat_only` flag lets you run the zero-shot chat condition separately (e.g. after switching to an instruct endpoint), then merge results back into the saved `results.json`.
+
+---
+
+## Citation
+
+This project applies the Internal Coherence Maximization (ICM) method introduced in:
+
+> Jiaxin Wen, Zachary Ankner, Arushi Somani, Peter Hase, Samuel Marks, Jacob Goldman-Wetzler, Linda Petrini, Henry Sleight, Collin Burns, He He, Shi Feng, Ethan Perez, Jan Leike. *Unsupervised Elicitation of Language Models.* arXiv:2506.10139, 2026. https://arxiv.org/abs/2506.10139
+
+```bibtex
+@misc{wen2026unsupervisedelicitationlanguagemodels,
+      title={Unsupervised Elicitation of Language Models},
+      author={Jiaxin Wen and Zachary Ankner and Arushi Somani and Peter Hase and Samuel Marks and Jacob Goldman-Wetzler and Linda Petrini and Henry Sleight and Collin Burns and He He and Shi Feng and Ethan Perez and Jan Leike},
+      year={2026},
+      eprint={2506.10139},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2506.10139},
+}
+```
 
 ---
 
