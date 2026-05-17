@@ -142,15 +142,6 @@ BASE_MODEL=meta-llama/Meta-Llama-3.1-70B
 CHAT_MODEL=meta-llama/Meta-Llama-3.1-70B-Instruct
 ```
 
-#### Option C — Fireworks (instruct only)
-
-```env
-API_KEY=your-fireworks-key
-API_BASE_URL=https://api.fireworks.ai/inference/v1
-BASE_MODEL=accounts/fireworks/models/llama-v3p1-70b-instruct
-CHAT_MODEL=accounts/fireworks/models/llama-v3p1-70b-instruct
-```
-
 ### 3. Download Data
 
 ```bash
