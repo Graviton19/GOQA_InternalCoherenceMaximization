@@ -258,6 +258,8 @@ COUNTRIES = [
 
 ## Results
 
+Experiments were conducted on **4 personas**: United States, Britain, Germany, and Japan — each evaluated on **100 binary test questions**, with ICM run on up to **256 binary training questions** per country using **600 simulated annealing iterations**.
+
 ### Figure 1 — Aggregate accuracy across all 4 conditions
 
 ![Figure 1: Aggregate Results](outputs/figure1_aggregate.png)
