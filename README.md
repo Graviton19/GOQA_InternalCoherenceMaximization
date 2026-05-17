@@ -107,31 +107,49 @@ Edit `.env` with your provider details. ICM **requires logprob access**, so you 
 
 #### Option A — Runpod vLLM (recommended)
 
-Deploy two separate vLLM pods (one for the base model, one for the instruct model), then set:
+Deploy a **single pod (2× A100 80GB)** and load the base and instruct models sequentially using the `--skip_chat` and `--chat_only` flags.
 
-```env
-API_KEY=sk-<base-pod-api-key>
-API_BASE_URL=https://<base-pod-id>-8000.proxy.runpod.net/v1
-BASE_MODEL=meta-llama/Llama-3.1-70B
-
-CHAT_API_KEY=sk-<chat-pod-api-key>
-CHAT_BASE_URL=https://<chat-pod-id>-8000.proxy.runpod.net/v1
-CHAT_MODEL=meta-llama/Llama-3.1-70B-Instruct
-```
-
-Start the vLLM server on each pod:
+**Step 1 — Load the base model and run ICM + base conditions:**
 
 ```bash
-# Base model pod
 python -m vllm.entrypoints.openai.api_server \
     --model meta-llama/Llama-3.1-70B --port 8000
+```
 
-# Instruct model pod
+Set your `.env`:
+
+```env
+API_KEY=sk-<pod-api-key>
+API_BASE_URL=https://<pod-id>-8000.proxy.runpod.net/v1
+BASE_MODEL=meta-llama/Llama-3.1-70B
+```
+
+Run the pipeline, skipping the chat condition:
+
+```bash
+python main.py --skip_chat
+```
+
+**Step 2 — Swap to the instruct model and run zero-shot chat:**
+
+```bash
 python -m vllm.entrypoints.openai.api_server \
     --model meta-llama/Llama-3.1-70B-Instruct --port 8000
 ```
 
-> Each pod requires >= 80 GB VRAM (A100 80GB or H100).
+Update `.env` with the instruct model (same pod ID):
+
+```env
+CHAT_API_KEY=sk-<pod-api-key>
+CHAT_BASE_URL=https://<pod-id>-8000.proxy.runpod.net/v1
+CHAT_MODEL=meta-llama/Llama-3.1-70B-Instruct
+```
+
+Merge the chat results into the existing `results.json`:
+
+```bash
+python main.py --chat_only
+```
 
 #### Option B — Together AI
 
